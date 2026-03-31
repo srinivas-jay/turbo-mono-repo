@@ -21,12 +21,6 @@ jobs:
       fail-fast: false
       matrix:
         task: [lint, test, build]
-    env:
-      TURBO_CACHE_KEY: turbo-${{ runner.os }}-${{ matrix.task }}-${{ github.ref_name }}-${{ github.sha }}
-      TURBO_RESTORE_KEYS: |
-        turbo-${{ runner.os }}-${{ matrix.task }}-${{ github.ref_name }}-
-        turbo-${{ runner.os }}-${{ matrix.task }}-main-
-        turbo-${{ runner.os }}-${{ matrix.task }}-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -39,8 +33,11 @@ jobs:
       - name: Restore and save Turbo cache
         uses: ./.github/actions/turbo-cache
         with:
-          cache-key: ${{ env.TURBO_CACHE_KEY }}
-          restore-keys: ${{ env.TURBO_RESTORE_KEYS }}
+          cache-key: turbo-linux-${{ matrix.task }}-${{ github.ref_name }}-${{ github.sha }}
+          restore-keys: |
+            turbo-linux-${{ matrix.task }}-${{ github.ref_name }}-
+            turbo-linux-${{ matrix.task }}-main-
+            turbo-linux-${{ matrix.task }}-
 
       - name: Run ${{ matrix.task }}
         uses: ./.github/actions/turbo-run

@@ -15,13 +15,6 @@ jobs:
   release:
     if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
-    env:
-      TURBO_CACHE_KEY: turbo-${{ runner.os }}-release-${{ github.ref_name }}-${{ github.sha }}
-      TURBO_RESTORE_KEYS: |
-        turbo-${{ runner.os }}-release-${{ github.ref_name }}-
-        turbo-${{ runner.os }}-build-${{ github.ref_name }}-
-        turbo-${{ runner.os }}-build-main-
-        turbo-${{ runner.os }}-build-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -49,8 +42,12 @@ jobs:
         if: steps.package-check.outputs.has_packages == 'true'
         uses: ./.github/actions/turbo-cache
         with:
-          cache-key: ${{ env.TURBO_CACHE_KEY }}
-          restore-keys: ${{ env.TURBO_RESTORE_KEYS }}
+          cache-key: turbo-linux-release-${{ github.ref_name }}-${{ github.sha }}
+          restore-keys: |
+            turbo-linux-release-${{ github.ref_name }}-
+            turbo-linux-build-${{ github.ref_name }}-
+            turbo-linux-build-main-
+            turbo-linux-build-
 
       - name: Version packages from conventional commits
         if: steps.package-check.outputs.has_packages == 'true'
