@@ -1,0 +1,22 @@
+name: "Turbo Cache Management"
+description: "Restores and saves Turbo local cache (.turbo)"
+
+inputs:
+  cache-key:
+    description: "Cache key for Turbo cache"
+    required: true
+  restore-keys:
+    description: "Additional restore keys for cache fallback"
+    required: false
+    default: "turbo-"
+
+runs:
+  using: "composite"
+  steps:
+    - name: Cache Turbo directory
+      uses: actions/cache@v4
+      with:
+        path: .turbo
+        key: ${{ inputs.cache-key }}
+        restore-keys: |
+          ${{ inputs.restore-keys }}

@@ -1,32 +1,16 @@
 {
   "name": "turbo-mono-repo",
   "private": true,
-  "homepage": "https://github.com/inscriptors/turbo-mono-repo#readme",
-  "bugs": {
-    "url": "https://github.com/inscriptors/turbo-mono-repo/issues"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/inscriptors/turbo-mono-repo.git"
-  },
+  "homepage": "https://github.com/srinivas-jay/turbo-mono-repo#readme",
   "license": "MIT",
   "scripts": {
-    "add-changeset": "changeset add",
     "build": "turbo run build",
     "dev": "turbo run dev",
-    "init-changeset": "changeset init",
     "lint": "turbo run lint",
-    "prepare": "husky install",
-    "prerelease": "turbo run build lint test",
-    "release": "changeset publish",
+    "prepare": "husky",
+    "release": "lerna publish from-git --yes --no-verify-access",
     "test": "turbo run test",
-    "version-packages": "changeset version"
-  },
-  "lint-staged": {
-    "**/*.{js,jsx,ts,tsx}": [
-      "npx prettier --write",
-      "npx eslint --fix"
-    ]
+    "version-packages": "lerna version --conventional-commits --yes --push"
   },
   "config": {
     "commitizen": {
@@ -34,24 +18,28 @@
     }
   },
   "devDependencies": {
-    "@changesets/cli": "^2.26.2",
-    "@commitlint/cli": "^17.6.7",
-    "@commitlint/config-conventional": "^17.6.7",
-    "@inscriptors/eslint-config": "workspace:*",
-    "@turbo/gen": "^1.10.9",
-    "commitizen": "^4.3.0",
+    "@biomejs/biome": "^2.4.10",
+    "@types/node": "^25.5.0",
+    "@commitlint/cli": "^20.5.0",
+    "@commitlint/config-conventional": "^20.5.0",
+    "@turbo/gen": "^2.9.2",
+    "commitizen": "^4.3.1",
     "commitlint-plugin-workspace-scopes": "^1.1.0",
     "cz-conventional-changelog": "^3.3.0",
-    "eslint": "^8.45.0",
-    "eslint-plugin-prettier": "^5.0.0",
-    "husky": "^8.0.3",
-    "lint-staged": "^13.2.3",
-    "prettier": "^3.0.0",
-    "turbo": "latest"
+    "dotenv": "^17.3.1",
+    "husky": "^9.1.7",
+    "lerna": "^9.0.7",
+    "markdownlint-cli": "^0.48.0",
+    "rimraf": "^6.1.3",
+    "tslib": "^2.8.1",
+    "tsx": "^4.21.0",
+    "turbo": "latest",
+    "typescript": "^6.0.2"
   },
+  "packageManager": "pnpm@10.24.0",
   "engines": {
-    "node": ">=18",
-    "pnpm": ">=8"
+    "node": ">=24",
+    "pnpm": ">=10"
   },
   "engineStrict": true
 }

@@ -1,0 +1,21 @@
+name: Version Management
+
+description: 'Run Lerna version command to update package versions and generate changelogs'
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Setup Git
+      shell: bash
+      run: |
+        git config --local user.email "ci@aialchemy.au"
+        git config --local user.name "CI Bot"
+    
+    - name: Run Lerna version
+      shell: bash
+      run: |
+        echo "Running Lerna version with conventional commits..."
+        pnpm lerna version \
+          --conventional-commits \
+          --yes \
+          --push

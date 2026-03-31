@@ -1,0 +1,50 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  lint-test-build:
+    name: ${{ matrix.task }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        task: [lint, test, build]
+    env:
+      TURBO_CACHE_KEY: turbo-${{ runner.os }}-${{ matrix.task }}-${{ github.ref_name }}-${{ github.sha }}
+      TURBO_RESTORE_KEYS: |
+        turbo-${{ runner.os }}-${{ matrix.task }}-${{ github.ref_name }}-
+        turbo-${{ runner.os }}-${{ matrix.task }}-main-
+        turbo-${{ runner.os }}-${{ matrix.task }}-
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install dependencies
+        uses: ./.github/actions/install-deps
+
+      - name: Restore and save Turbo cache
+        uses: ./.github/actions/turbo-cache
+        with:
+          cache-key: ${{ env.TURBO_CACHE_KEY }}
+          restore-keys: ${{ env.TURBO_RESTORE_KEYS }}
+
+      - name: Run ${{ matrix.task }}
+        uses: ./.github/actions/turbo-run
+        with:
+          task: ${{ matrix.task }}
+          base-branch: origin/main
+          event-type: ${{ github.event_name }}

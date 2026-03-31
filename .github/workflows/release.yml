@@ -1,63 +1,76 @@
-name: Build and deploy release packages on Merge to main
+name: Manual Release
 
 on:
-    push:
-        branches:
-            - main
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  packages: write
+
+concurrency:
+  group: release-${{ github.ref_name }}
+  cancel-in-progress: false
 
 jobs:
-    main:
-        name: Main job
-        runs-on: ubuntu-latest
-        steps:
-            - name: Checkout
-              uses: actions/checkout@v3
-              with:
-                  fetch-depth: 0
+  release:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    env:
+      TURBO_CACHE_KEY: turbo-${{ runner.os }}-release-${{ github.ref_name }}-${{ github.sha }}
+      TURBO_RESTORE_KEYS: |
+        turbo-${{ runner.os }}-release-${{ github.ref_name }}-
+        turbo-${{ runner.os }}-build-${{ github.ref_name }}-
+        turbo-${{ runner.os }}-build-main-
+        turbo-${{ runner.os }}-build-
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ github.ref_name }}
+          token: ${{ secrets.GITHUB_TOKEN }}
 
-            - name: setup git config and track main branch
-              run: |
-                  git config user.name "ACTIONS_AUTOBOTS"
-                  git config user.email "<srini.j135@gmail.com>"
+      - name: Install dependencies
+        uses: ./.github/actions/install-deps
 
-            - name: Setup Node.js
-              uses: actions/setup-node@v3
-              with:
-                  node-version-file: '.nvmrc'
-                  # registry-url: 'https://npm.pkg.github.com'
-                  # scope: '@inscriptors'
-              # env:
-              #     NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+      - name: Detect publishable packages
+        id: package-check
+        shell: bash
+        run: |
+          output="$(pnpm lerna ls --all 2>&1)"
+          echo "$output"
+          if echo "$output" | grep -q "found 0 packages"; then
+            echo "has_packages=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "has_packages=true" >> "$GITHUB_OUTPUT"
+          fi
 
-            - name: Install pnpm
-              uses: pnpm/action-setup@v2
-              with:
-                  version: latest
-                  run_install: false
+      - name: Restore and save Turbo cache
+        if: steps.package-check.outputs.has_packages == 'true'
+        uses: ./.github/actions/turbo-cache
+        with:
+          cache-key: ${{ env.TURBO_CACHE_KEY }}
+          restore-keys: ${{ env.TURBO_RESTORE_KEYS }}
 
-            - name: Get pnpm store directory
-              id: pnpm-cache
-              shell: bash
-              run: |
-                  echo "STORE_PATH=$(pnpm store path)" >> $GITHUB_OUTPUT
+      - name: Version packages from conventional commits
+        if: steps.package-check.outputs.has_packages == 'true'
+        uses: ./.github/actions/version-management
 
-            - name: setup pnpm cache
-              uses: actions/cache@v3
-              with:
-                  key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
-                  path: ${{ steps.pnpm-cache.outputs.STORE_PATH }}
-                  restore-keys: |
-                      ${{ runner.os }}-pnpm-store-
+      - name: Build packages
+        if: steps.package-check.outputs.has_packages == 'true'
+        uses: ./.github/actions/turbo-run
+        with:
+          task: build
+          base-branch: origin/main
+          event-type: workflow_dispatch
 
-            - name: Install dependencies
-              run: pnpm install
+      - name: Publish packages
+        if: steps.package-check.outputs.has_packages == 'true'
+        uses: ./.github/actions/publish-packages
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
 
-            - name: Create Release Pull Request or Publish to Github Registry
-              uses: changesets/action@v1
-              with:
-                  publish: pnpm release
-                  version: pnpm version-packages
-                  commit: 'chore: release package(s)'
-                  title: 'chore: release package(s)'
-              env:
-                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Skip release when no packages exist
+        if: steps.package-check.outputs.has_packages != 'true'
+        shell: bash
+        run: echo "No workspace packages were found. Skipping version and publish steps."

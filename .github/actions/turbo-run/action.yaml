@@ -1,0 +1,33 @@
+name: "Turbo Task Execution"
+description: "Executes Turbo tasks with proper affected project detection"
+
+inputs:
+  task:
+    description: "Turbo task to run (build, test, lint, etc.)"
+    required: true
+  base-branch:
+    description: "Base branch for affected project detection"
+    required: false
+    default: "origin/main"
+  event-type:
+    description: "GitHub event type (push or pull_request)"
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    - name: Execute Turbo task
+      shell: bash
+      env:
+        DATABASE_URL: ${{ env.DATABASE_URL }}
+        AUTH_SECRET: ${{ env.AUTH_SECRET }}
+      run: |
+        # Export environment variables so they're available to child processes
+        export DATABASE_URL="$DATABASE_URL"
+        export AUTH_SECRET="$AUTH_SECRET"
+        
+        if [ "${{ inputs.event-type }}" = "pull_request" ]; then
+          pnpm turbo run ${{ inputs.task }} --filter=...[${{ inputs.base-branch }}]
+        else
+          pnpm turbo run ${{ inputs.task }}
+        fi

@@ -6,8 +6,8 @@ This repository showcases using a monorepo to house a design system and the vari
 
 -   🏎 [Turborepo](https://turborepo.org) — High-performance build system for monorepos
 -   🔐 [Commitlint](https://commitlint.js.org/#/) — Checks commits follow conventional commits format
--   📋 [Changesets](https://github.com/changesets/changesets) — Managing versioning, publishing and changelogs
--   🛠 [GitHub Actions](https://github.com/changesets/action) — Running workflows in continuous integration
+-   📋 [Lerna](https://lerna.js.org/) — Managing commit-based versioning, publishing and changelogs
+-   🛠 [GitHub Actions](https://docs.github.com/actions) — Running workflows in continuous integration
 
 ## What is a Turborepo ?
 
@@ -36,30 +36,14 @@ This Turborepo has some additional tools already setup for you:
 
 ## Versioning & Publishing Packages
 
--   `pnpm add-changeset` - Generate a changeset file
--   `pnpm version-packages` - Update versions, changelogs and dependencies of packages.
--   `pnpm release` - Publishes changes to package registry and creates git tags.
+-   `pnpm version-packages` - Bumps package versions from conventional commits and creates tags.
+-   `pnpm release` - Publishes tagged package versions to the configured registry.
 
-The monorepo uses [Changesets](https://github.com/changesets/changesets) to manage versions, create changelogs, and publish to the package registry. You'll need to create an `NPM_TOKEN` and `GITHUB_TOKEN` and add it to your GitHub repository settings to enable access to the package registry.
-
-### Generating the Changelog
-
-To generate your changelog, run `pnpm add-changeset` locally:
-
-1. **Which packages would you like to include?** – This shows which packages and changed and which have remained the same. By default, no packages are included. Press `space` to select the packages you want to include in the `changeset`.
-1. **Which packages should have a major bump?** – Press `space` to select the packages you want to bump versions for.
-1. If doing the first major version, confirm you want to release.
-1. Write a summary for the changes.
-1. Confirm the changeset looks as expected.
-1. A new Markdown file will be created in the `changeset` folder with the summary and a list of the packages included.
-
-These changeset files should be part of your PR and committed into the trunk branch, ready for future release.
+This monorepo uses [Lerna](https://lerna.js.org/) for commit-based auto versioning (`--conventional-commits`) and publishing (`from-git`).
 
 ### Releasing
 
-When you merge your PR into the trunk branch, the [GitHub Action](https://github.com/changesets/action) will create a PR with all of the package versions updated and changelogs updated. If more PRs get merged with more changesets then the PR opened by the GitHub Action will be updated.
-
-Merging this PR will, along with updating all of the files it changed, make the GitHub Action trigger it's release cycle where it attempts to publish each package within the workspaces package file.
+Use the manual `release.yml` workflow from GitHub Actions to run the release process on demand from `main`.
 
 ### Build
 

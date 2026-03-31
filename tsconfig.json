@@ -1,0 +1,52 @@
+{
+	"compilerOptions": {
+		// === Language and Environment ===
+		"target": "ES2022",
+		"lib": ["ES2022"],
+
+		// === Modules ===
+		"module": "ESNext",
+		"moduleResolution": "bundler",
+		"allowSyntheticDefaultImports": true,
+		"esModuleInterop": true,
+		"allowJs": true,
+		"resolveJsonModule": true,
+		"verbatimModuleSyntax": true,
+		"isolatedModules": true,
+
+		// === Emit ===
+		"declaration": true,
+		"declarationMap": true,
+		"sourceMap": true,
+		"incremental": true,
+		"composite": true,
+		"emitDeclarationOnly": true,
+
+		// === Interop Constraints ===
+		"forceConsistentCasingInFileNames": true,
+
+		// === Type Checking ===
+		"strict": true,
+		"noUncheckedIndexedAccess": true,
+		"noImplicitOverride": true,
+		"noImplicitReturns": true,
+		"noFallthroughCasesInSwitch": true,
+		"noUnusedLocals": true,
+		"noUnusedParameters": true,
+
+		// === Completeness ===
+		"skipLibCheck": true
+	},
+	"include": [],
+	"exclude": ["node_modules", "dist"],
+	"references": [
+		{ "path": "./libs/shared-utils" },
+		{ "path": "./agentic-tools/discovery-service" },
+		{ "path": "./agentic-tools/doc-retrival" },
+		{ "path": "./agentic-tools/doc-ingestion" },
+		{ "path": "./multi-agents/document-agent" },
+		{ "path": "./multi-agents/master-agent" },
+		{ "path": "./multi-agents/web-search-agent" },
+		{ "path": "./frontends/web-ui" }
+	]
+}

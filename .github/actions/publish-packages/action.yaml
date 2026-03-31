@@ -1,0 +1,41 @@
+name: "Publish Packages"
+description: "Publishes packages to GitHub Packages using Lerna"
+
+inputs:
+  github-token:
+    description: "GitHub token for authentication"
+    required: true
+  registry-url:
+    description: "NPM registry URL"
+    required: false
+    default: "https://npm.pkg.github.com"
+  scope:
+    description: "NPM scope for packages"
+    required: false
+    default: "@aialchemylabs"
+
+runs:
+  using: "composite"
+  steps:
+    - name: Show package and artifact status
+      shell: bash
+      run: |
+        echo "Detected workspace packages:"
+        pnpm lerna ls --all
+        echo "Detected dist directories (if any):"
+        find . -name "dist" -type d || true
+    
+    - name: Setup Node for GitHub Packages
+      uses: actions/setup-node@v4
+      with:
+        node-version-file: ".nvmrc"
+        registry-url: ${{ inputs.registry-url }}
+        scope: ${{ inputs.scope }}
+    
+    - name: Publish packages
+      env:
+        NODE_AUTH_TOKEN: ${{ inputs.github-token }}
+      shell: bash
+      run: |
+        echo "Publishing packages with updated versions..."
+        pnpm lerna publish from-git --yes --no-verify-access

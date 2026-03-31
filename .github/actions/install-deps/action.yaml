@@ -1,0 +1,44 @@
+name: "Install dependencies with pnpm cache"
+description: "Sets up Node via .nvmrc, pnpm, restores pnpm cache, and installs dependencies"
+
+inputs:
+  pnpm-version:
+    description: "pnpm version to install"
+    required: false
+    default: "10.24.0"
+  cache-dependency-path:
+    description: "Path(s) to lockfile(s) for caching"
+    required: false
+    default: "pnpm-lock.yaml"
+  node-version-file:
+    description: "Node version file"
+    required: false
+    default: ".nvmrc"
+
+runs:
+  using: "composite"
+  steps:
+    - name: Setup pnpm
+      uses: pnpm/action-setup@v4
+      with:
+        version: ${{ inputs.pnpm-version }}
+        run_install: false
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version-file: ${{ inputs.node-version-file }}
+        cache: "pnpm"
+        cache-dependency-path: ${{ inputs.cache-dependency-path }}
+
+    - name: Show pnpm store path
+      id: pnpm-cache
+      shell: bash
+      run: |
+        echo "STORE_PATH=$(pnpm store path)" >> $GITHUB_OUTPUT
+
+    - name: Install dependencies
+      shell: bash
+      run: pnpm install --frozen-lockfile --prefer-offline
+
+
