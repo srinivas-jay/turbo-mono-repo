@@ -4,10 +4,10 @@
 
 This repository showcases using a monorepo to house a design system and the various packages one could contain. It is built for React and uses a number of different tools to create and maintain packages:
 
--   🏎 [Turborepo](https://turborepo.org) — High-performance build system for monorepos
--   🔐 [Commitlint](https://commitlint.js.org/#/) — Checks commits follow conventional commits format
--   📋 [Lerna](https://lerna.js.org/) — Managing commit-based versioning, publishing and changelogs
--   🛠 [GitHub Actions](https://docs.github.com/actions) — Running workflows in continuous integration
+- 🏎 [Turborepo](https://turborepo.org) — High-performance build system for monorepos
+- 🔐 [Commitlint](https://commitlint.js.org/#/) — Checks commits follow conventional commits format
+- 📋 [Lerna](https://lerna.js.org/) — Managing commit-based versioning, publishing and changelogs
+- 🛠 [GitHub Actions](https://docs.github.com/actions) — Running workflows in continuous integration
 
 ## What is a Turborepo ?
 
@@ -21,23 +21,23 @@ Turborepo is configured in CI/CD to only test packages that have changes detecte
 
 Highlights of benefits from using this monorepo are:
 
--   Turborepo caching so commands don't re-run unless changed detected.
--   Internal packages to house common configuration for tools like ESLint, TypeScript.
--   Type-checking method within each package that turborepo can cache.
--   Shared Storybook (`apps/docs`) across all React related packages.
+- Turborepo caching so commands don't re-run unless changed detected.
+- Internal packages to house common configuration for tools like ESLint, TypeScript.
+- Type-checking method within each package that turborepo can cache.
+- Shared Storybook (`apps/docs`) across all React related packages.
 
 ### Utilities
 
 This Turborepo has some additional tools already setup for you:
 
--   [TypeScript](https://www.typescriptlang.org/) for static type checking
--   [ESLint](https://eslint.org/) for code linting
--   [Prettier](https://prettier.io) for code formatting
+- [TypeScript](https://www.typescriptlang.org/) for static type checking
+- [ESLint](https://eslint.org/) for code linting
+- [Prettier](https://prettier.io) for code formatting
 
 ## Versioning & Publishing Packages
 
--   `pnpm version-packages` - Bumps package versions from conventional commits and creates tags.
--   `pnpm release` - Publishes tagged package versions to the configured registry.
+- `pnpm version-packages` - Bumps package versions from conventional commits and creates tags.
+- `pnpm release` - Publishes tagged package versions to the configured registry.
 
 This monorepo uses [Lerna](https://lerna.js.org/) for commit-based auto versioning (`--conventional-commits`) and publishing (`from-git`).
 
@@ -49,7 +49,7 @@ Use the manual `release.yml` workflow from GitHub Actions to run the release pro
 
 To build all apps and packages, run the following command:
 
-```
+```bash
 cd my-turborepo
 pnpm build
 ```
@@ -58,7 +58,7 @@ pnpm build
 
 To develop all apps and packages, run the following command:
 
-```
+```bash
 cd my-turborepo
 pnpm dev
 ```
@@ -69,7 +69,7 @@ Turborepo can use a technique known as [Remote Caching](https://turbo.build/repo
 
 By default, Turborepo will cache locally. To enable Remote Caching you will need an account with Vercel. If you don't have an account you can [create one](https://vercel.com/signup), then enter the following commands:
 
-```
+```bash
 cd my-turborepo
 npx turbo login
 ```
@@ -78,7 +78,7 @@ This will authenticate the Turborepo CLI with your [Vercel account](https://verc
 
 Next, you can link your Turborepo to your Remote Cache by running the following command from the root of your Turborepo:
 
-```
+```bash
 npx turbo link
 ```
 
@@ -86,9 +86,9 @@ npx turbo link
 
 Learn more about the power of Turborepo:
 
--   [Tasks](https://turbo.build/repo/docs/core-concepts/monorepos/running-tasks)
--   [Caching](https://turbo.build/repo/docs/core-concepts/caching)
--   [Remote Caching](https://turbo.build/repo/docs/core-concepts/remote-caching)
--   [Filtering](https://turbo.build/repo/docs/core-concepts/monorepos/filtering)
--   [Configuration Options](https://turbo.build/repo/docs/reference/configuration)
--   [CLI Usage](https://turbo.build/repo/docs/reference/command-line-reference)
+- [Tasks](https://turbo.build/repo/docs/core-concepts/monorepos/running-tasks)
+- [Caching](https://turbo.build/repo/docs/core-concepts/caching)
+- [Remote Caching](https://turbo.build/repo/docs/core-concepts/remote-caching)
+- [Filtering](https://turbo.build/repo/docs/core-concepts/monorepos/filtering)
+- [Configuration Options](https://turbo.build/repo/docs/reference/configuration)
+- [CLI Usage](https://turbo.build/repo/docs/reference/command-line-reference)
